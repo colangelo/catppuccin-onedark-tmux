@@ -2,12 +2,12 @@
 
 ## Architecture
 
-This is a **color overlay**, not a fork of catppuccin/tmux. Catppuccin's format strings use `#{@thm_*}` tmux format expansions evaluated at runtime. This plugin loads AFTER catppuccin and overrides those variables with OneDark hex values — all catppuccin modules then render in OneDark colors automatically.
+This is a **color pre-load**, not a fork of catppuccin/tmux. It must load **BEFORE** catppuccin.tmux. Catppuccin's flavor files use `set -ogq` (the `-o` flag means "don't overwrite existing values"), so our `set -g` values persist. Catppuccin then uses `-gF` to bake these colors into format strings at load time.
 
 Load order in tmux.conf:
-1. `catppuccin/tmux` loads → sets `@thm_*` to mocha palette
-2. `catppuccin-onedark-tmux` loads → overrides `@thm_*` with OneDark colors
-3. tmux evaluates `#{@thm_*}` → uses OneDark colors
+1. `catppuccin-onedark-tmux` loads → sets `@thm_*` with OneDark colors (`set -g`)
+2. `catppuccin/tmux` loads → flavor file tries `set -ogq @thm_*` but `-o` preserves our values; `-gF` lines bake OneDark colors into format strings
+3. tmux renders status bar → uses OneDark colors everywhere
 
 ## Files
 
