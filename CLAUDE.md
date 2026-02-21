@@ -18,7 +18,29 @@ Load order in tmux.conf:
 
 Base tones are derived from Atom One Dark's background palette (bg, bg-alt, gutter, comment-grey, fg, fg-alt). Accent colors map directly from OneDark's 8 syntax colors (red, green, yellow, blue, purple, cyan, dark-yellow, dark-red). Gaps (rosewater, sapphire, lavender) are interpolated/shifted variants to fill catppuccin's larger palette.
 
-## How to Add/Change Colors
+## How to Customize catppuccin Options in tmux.conf
+
+Catppuccin has three kinds of tmux options — understanding the difference is critical:
+
+1. **`set -ogq` (with `-o`)**: Won't overwrite existing values. Set your override BEFORE `run catppuccin.tmux` and it sticks. Example: `@catppuccin_host_color`, `@catppuccin_host_text`, `@thm_*` palette vars.
+
+2. **`set -gqF` (with `-F`, no `-o`)**: Evaluates format strings and ALWAYS overwrites. These are internal variables built during loading. You cannot pre-set them — they'll be overwritten.
+
+3. **Conditional sets (`%if` guards)**: Some internal vars like `@catppuccin_status_*_icon_bg` are only set if empty. On first load this works, but on **reload** the old value persists and the `%if` is skipped. **Fix: set the internal `_icon_bg` variable directly** in tmux.conf to ensure it's always correct.
+
+### Reload gotcha
+
+On `tmux source-file`, tmux options from the previous load are NOT cleared. Catppuccin's `%if "#{==:#{@var},}"` guards see stale values and skip updates. Always set derived variables (like `@catppuccin_status_*_icon_bg`) explicitly — don't rely on catppuccin computing them from `@catppuccin_*_color`.
+
+### Colors: use hex, not colour names
+
+Catppuccin embeds colors in `#[fg=...,bg=...]` tmux style strings via `-gF`. Use hex values (`"#870000"`) not tmux colour names (`"colour88"`) — hex is what catppuccin expects and is more reliable in format string evaluation.
+
+### Short hostnames
+
+Use `#h` (tmux built-in short hostname) not `#(hostname -s)` (shell command). The `#H` format gives the full hostname including `.local`.
+
+## How to Add/Change OneDark Palette Colors
 
 Edit `onedark.conf`. Each line is `set -g @thm_<name> "#rrggbb"`. The variable names must match catppuccin's expected `@thm_*` names exactly.
 
