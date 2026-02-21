@@ -25,6 +25,7 @@ Edit `onedark.conf`. Each line is `set -g @thm_<name> "#rrggbb"`. The variable n
 ## Development
 
 - Always commit granularly — one logical change per commit
+- `~/.config/tmux/tmux.conf` is managed by chezmoi — after editing, run `chezmoi add ~/.config/tmux/tmux.conf` and commit in the chezmoi repo (`~/.local/share/chezmoi`)
 
 ## How to Test
 
